@@ -17,11 +17,14 @@ namespace Akka.Quartz.Actor
     {
         private readonly IScheduler _scheduler;
 
-        public QuartzActor(NameValueCollection props = null)
+        public QuartzActor()
         {
-            _scheduler = props == null
-                ? new StdSchedulerFactory().GetScheduler()
-                : new StdSchedulerFactory(props).GetScheduler();
+            _scheduler = new StdSchedulerFactory().GetScheduler();
+        }
+
+        public QuartzActor(NameValueCollection props)
+        {
+            _scheduler = new StdSchedulerFactory(props).GetScheduler();
         }
 
         protected override bool Receive(object message)

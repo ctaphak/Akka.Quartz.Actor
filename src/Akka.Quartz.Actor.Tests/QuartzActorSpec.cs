@@ -13,7 +13,7 @@ namespace Akka.Quartz.Actor.Tests
         public void QuartzActor_Should_Create_Job()
         {
             var probe = CreateTestProbe(Sys);
-            var quartzActor = Sys.ActorOf(Props.Create(() => new QuartzActor(null)), "QuartzActor");
+            var quartzActor = Sys.ActorOf(Props.Create(() => new QuartzActor()), "QuartzActor");
             quartzActor.Tell(new CreateJob(probe, "Hello", " * * * * * ?"));
             ExpectMsg<JobCreated>();
             probe.ExpectMsg("Hello", TimeSpan.FromSeconds(5));
@@ -24,7 +24,7 @@ namespace Akka.Quartz.Actor.Tests
         public void QuartzActor_Should_Remove_Job()
         {
             var probe = CreateTestProbe(Sys);
-            var quartzActor = Sys.ActorOf(Props.Create(() => new QuartzActor(null)), "QuartzActor");
+            var quartzActor = Sys.ActorOf(Props.Create(() => new QuartzActor()), "QuartzActor");
             quartzActor.Tell(new CreateJob(probe, "Hello", " * * * * * ?"));
             var jobCreated = ExpectMsg<JobCreated>();
             probe.ExpectMsg("Hello", TimeSpan.FromSeconds(5));
@@ -38,7 +38,7 @@ namespace Akka.Quartz.Actor.Tests
         public void QuartzActor_Should_Fail_With_Invalid_CronString()
         {
             var probe = CreateTestProbe(Sys);
-            var quartzActor = Sys.ActorOf(Props.Create(() => new QuartzActor(null)), "QuartzActor");
+            var quartzActor = Sys.ActorOf(Props.Create(() => new QuartzActor()), "QuartzActor");
             quartzActor.Tell(new CreateJob(probe, "Hello", " invalid strings ?"));
             var failedJob = ExpectMsg<CreateJobFail>();
             Assert.NotNull(failedJob.Reason);
@@ -47,7 +47,7 @@ namespace Akka.Quartz.Actor.Tests
         [Fact]
         public void QuartzActor_Should_Fail_With_Null_Actor()
         {
-            var quartzActor = Sys.ActorOf(Props.Create(() => new QuartzActor(null)), "QuartzActor");
+            var quartzActor = Sys.ActorOf(Props.Create(() => new QuartzActor()), "QuartzActor");
             quartzActor.Tell(new CreateJob(null, "Hello", " invalid strings ?"));
             var failedJob = ExpectMsg<CreateJobFail>();
             Assert.NotNull(failedJob.Reason);
