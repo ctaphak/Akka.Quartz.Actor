@@ -3,7 +3,9 @@ This is the Quartz integration plugin for Akka.NET.
 
 ## Using ##
 Install:
-	```PM>Install-Package Akka.Quartz.Actor```
+```
+PM>Install-Package Akka.Quartz.Actor
+```
 Create a Receiver:
 ``` 
 class Receiver: ActorBase
@@ -21,9 +23,14 @@ var receiver = Sys.ActorOf(Props.Create(() => new Receiver()), "Receiver");
 ```
 
 Create a QuartzActor:
-	```var quartzActor = Sys.ActorOf(Props.Create(() => new QuartzActor()), "QuartzActor");```
+```    
+var quartzActor = Sys.ActorOf(Props.Create(() => new QuartzActor()), "QuartzActor");
+```
+
 Send it add messages:
-    ```quartzActor.Tell(new CreateJob(receiver, "Hello", " * * * * * ?"));```
+```
+quartzActor.Tell(new CreateJob(receiver, "Hello", TriggerBuilder.Create().WithCronSchedule( " * * * * * ?").Build())));
+```
 
 Now message "Hello" will be delivered to receiver every 5 seconds.
 

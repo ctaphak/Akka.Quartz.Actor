@@ -46,20 +46,31 @@ namespace Akka.Quartz.Actor
 
         protected virtual void CreateJobCommand(CreateJob createJob)
         {
-            var jobKey = CreateJobKey(createJob);
-            var triggerKey = CreateTriggerKey(createJob);
-            var job = QuartzJob.CreateBuilderWithData(createJob.To, createJob.Message).WithIdentity(jobKey).Build();
-            try
+            if (createJob.To == null)
             {
-                _scheduler.ScheduleJob(job, TriggerBuilder.Create().StartNow()
-                    .WithIdentity(triggerKey).ForJob(job)
-                    .WithSchedule(CronScheduleBuilder.CronSchedule(createJob.Cron)).Build());
-
-                Context.Sender.Tell(new JobCreated(jobKey, triggerKey));
+                Context.Sender.Tell(new CreateJobFail(null, null, new ArgumentNullException("createJob.To")));
             }
-            catch (Exception ex)
+            if (createJob.Trigger == null)
             {
-                Context.Sender.Tell(new CreateJobFail(jobKey, triggerKey, ex));
+                Context.Sender.Tell(new CreateJobFail(null, null, new ArgumentNullException("createJob.Trigger")));
+            }
+            else
+            {
+
+                try
+                {
+                    var job =
+                   QuartzJob.CreateBuilderWithData(createJob.To, createJob.Message)
+                       .WithIdentity(createJob.Trigger.JobKey)
+                       .Build();
+                    _scheduler.ScheduleJob(job, createJob.Trigger);
+
+                    Context.Sender.Tell(new JobCreated(createJob.Trigger.JobKey, createJob.Trigger.Key));
+                }
+                catch (Exception ex)
+                {
+                    Context.Sender.Tell(new CreateJobFail(createJob.Trigger.JobKey, createJob.Trigger.Key, ex));
+                }
             }
         }
 
@@ -67,27 +78,20 @@ namespace Akka.Quartz.Actor
         {
             try
             {
-                _scheduler.DeleteJob(removeJob.JobKey);
-                Context.Sender.Tell(new JobRemoved(removeJob.JobKey, removeJob.TriggerKey));
+                var deleted = _scheduler.DeleteJob(removeJob.JobKey);
+                if (deleted)
+                {
+                    Context.Sender.Tell(new JobRemoved(removeJob.JobKey, removeJob.TriggerKey));
+                }
+                else
+                {
+                    Context.Sender.Tell(new RemoveJobFail(removeJob.JobKey, removeJob.TriggerKey, new Exception("job not found")));
+                }
             }
             catch (Exception ex)
             {
                 Context.Sender.Tell(new RemoveJobFail(removeJob.JobKey, removeJob.TriggerKey, ex));
             }
-        }
-
-        protected virtual JobKey CreateJobKey(CreateJob createJob)
-        {
-            return new JobKey(
-                string.Format("{0}{1}{2}job", createJob.To, createJob.Message, createJob.Cron).GetHashCode().ToString());
-        }
-
-        protected virtual TriggerKey CreateTriggerKey(CreateJob createJob)
-        {
-            return new TriggerKey(
-                string.Format("{0}{1}{2}trigger", createJob.To, createJob.Message, createJob.Cron)
-                    .GetHashCode()
-                    .ToString());
         }
     }
 }
