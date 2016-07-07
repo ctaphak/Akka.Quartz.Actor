@@ -1,17 +1,18 @@
 ﻿using Akka.Actor;
+using Quartz;
 
 namespace Akka.Quartz.Actor.Commands
 {
     /// <summary>
-    ///     Message to add a cron scheduler.
+    ///     Message to add a trigger.
     /// </summary>
     public class CreateJob : IJobCommand
     {
-        public CreateJob(IActorRef to, object message, string cron)
+        public CreateJob(IActorRef to, object message, ITrigger trigger)
         {
             To = to;
             Message = message;
-            Cron = cron;
+            Trigger = trigger;
         }
 
         /// <summary>
@@ -25,8 +26,8 @@ namespace Akka.Quartz.Actor.Commands
         public object Message { get; private set; }
 
         /// <summary>
-        ///     Cron expression
+        ///     Trigger 
         /// </summary>
-        public string Cron { get; private set; }
+        public ITrigger Trigger { get; private set; }
     }
 }
