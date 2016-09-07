@@ -27,7 +27,7 @@ Create a QuartzActor:
 var quartzActor = Sys.ActorOf(Props.Create(() => new QuartzActor()), "QuartzActor");
 ```
 
-Send it add messages:
+Send "Hello" message to Receiver Actor:
 ```
 quartzActor.Tell(new CreateJob(receiver, "Hello", TriggerBuilder.Create().WithCronSchedule( " * * * * * ?").Build())));
 ```
