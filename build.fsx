@@ -159,11 +159,16 @@ let createNugetPackages _ =
             not (directoryExists dir)
         runWithRetries del 3 |> ignore
 
+    let mutable dirId = 1
+
     ensureDirectory nugetDir
     for nuspec in !! "src/**/*.nuspec" do
         printfn "Creating nuget packages for %s" nuspec
         
-        CleanDir workingDir
+        let tempBuildDir = workingDir + dirId.ToString()
+        ensureDirectory tempBuildDir
+
+        CleanDir tempBuildDir
 
         let project = Path.GetFileNameWithoutExtension nuspec 
         let projectDir = Path.GetDirectoryName nuspec
@@ -185,12 +190,12 @@ let createNugetPackages _ =
                         Version = release.NugetVersion
                         Tags = tags |> String.concat " "
                         OutputPath = outputDir
-                        WorkingDir = workingDir
+                        WorkingDir = tempBuildDir
                         SymbolPackage = symbolPackage
                         Dependencies = packageDependencies })
                 nuspec
 
-        // Copy dll, pdb and xml to libdir = workingDir/lib/net45/
+        // Copy dll, pdb and xml to libdir = tempBuildDir/lib/net45/
         ensureDirectory libDir
         !! (releaseDir @@ project + ".dll")
         ++ (releaseDir @@ project + ".pdb")
@@ -198,8 +203,8 @@ let createNugetPackages _ =
         ++ (releaseDir @@ project + ".ExternalAnnotations.xml")
         |> CopyFiles libDir
 
-        // Copy all src-files (.cs and .fs files) to workingDir/src
-        let nugetSrcDir = workingDir @@ @"src/"
+        // Copy all src-files (.cs and .fs files) to tempBuildDir/src
+        let nugetSrcDir = tempBuildDir @@ @"src/"
         // CreateDir nugetSrcDir
 
         let isCs = hasExt ".cs"
@@ -208,7 +213,7 @@ let createNugetPackages _ =
         let isSrc f = (isCs f || isFs f) && not (isAssemblyInfo f) 
         CopyDir nugetSrcDir projectDir isSrc
         
-        //Remove workingDir/src/obj and workingDir/src/bin
+        //Remove tempBuildDir/src/obj and tempBuildDir/src/bin
         removeDir (nugetSrcDir @@ "obj")
         removeDir (nugetSrcDir @@ "bin")
 
@@ -216,7 +221,7 @@ let createNugetPackages _ =
         // Uses the files we copied to workingDir and outputs to nugetdir
         pack nugetDir NugetSymbolPackage.Nuspec
         
-        removeDir workingDir
+        dirId <- dirId + 1
 
 let publishNugetPackages _ = 
     let rec publishPackage url accessKey trialsLeft packageFile =
