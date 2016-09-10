@@ -176,7 +176,6 @@ let createNugetPackages _ =
         let releaseDir = projectDir @@ @"bin\Release"
         let packages = projectDir @@ "packages.config"
         let packageDependencies = if (fileExists packages) then (getDependencies packages) else []
-       
         let pack outputDir symbolPackage =
             NuGetHelper.NuGet
                 (fun p ->
@@ -196,12 +195,13 @@ let createNugetPackages _ =
                 nuspec
 
         // Copy dll, pdb and xml to libdir = tempBuildDir/lib/net45/
-        ensureDirectory libDir
+        let tempLibDir = tempBuildDir @@ @"lib\net45\"
+        ensureDirectory tempLibDir
         !! (releaseDir @@ project + ".dll")
         ++ (releaseDir @@ project + ".pdb")
         ++ (releaseDir @@ project + ".xml")
         ++ (releaseDir @@ project + ".ExternalAnnotations.xml")
-        |> CopyFiles libDir
+        |> CopyFiles tempLibDir
 
         // Copy all src-files (.cs and .fs files) to tempBuildDir/src
         let nugetSrcDir = tempBuildDir @@ @"src/"
