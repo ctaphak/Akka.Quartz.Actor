@@ -1,2 +1,3 @@
-#### 1.0.0 September 07 2016 ####
-Support for Akka 1.1.1
+#### 1.0.1 September 10 2016 ####
+Update CI
+Added Reference missing from tests project, added to packages.config	
