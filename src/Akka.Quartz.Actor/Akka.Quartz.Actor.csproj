@@ -65,6 +65,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Commands\CreateJob.cs" />
+    <Compile Include="Commands\CreatePersistentJob.cs" />
     <Compile Include="Commands\IJobCommand.cs" />
     <Compile Include="Commands\RemoveJob.cs" />
     <Compile Include="Events\JobCreated.cs" />
@@ -75,6 +76,8 @@
     <Compile Include="QuartzActor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuartzJob.cs" />
+    <Compile Include="QuartzPersistentActor.cs" />
+    <Compile Include="QuartzPersistentJob.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
