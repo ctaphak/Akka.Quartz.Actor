@@ -13,11 +13,11 @@ namespace Akka.Quartz.Actor.Events
         /// <summary>
         ///     Job key
         /// </summary>
-        public JobKey JobKey { get; }
+        public JobKey JobKey { get; private set; }
 
         /// <summary>
         ///     Trigger key
         /// </summary>
-        public TriggerKey TriggerKey { get; }
+        public TriggerKey TriggerKey { get; private set; }
     }
 }

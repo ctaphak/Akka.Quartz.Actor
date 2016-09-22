@@ -16,7 +16,7 @@ namespace Akka.Quartz.Actor.Events
         /// <summary>
         ///     Fail reason
         /// </summary>
-        public Exception Reason { get; }
+        public Exception Reason { get; private set; }
 
         public override string ToString()
         {
