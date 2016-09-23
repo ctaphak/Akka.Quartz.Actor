@@ -1,3 +1,4 @@
 #### 1.0.1 September 10 2016 ####
-Update CI
-Added Reference missing from tests project, added to packages.config	
+added quartz persistent actor, quartz persistent job and create persistent job message
+fix properties setters
+updated to akka 1.1.2
