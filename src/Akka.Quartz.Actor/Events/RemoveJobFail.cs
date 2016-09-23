@@ -13,7 +13,7 @@ namespace Akka.Quartz.Actor.Events
             Reason = reason;
         }
 
-        public Exception Reason { get; }
+        public Exception Reason { get; private set; }
 
         public override string ToString()
         {
