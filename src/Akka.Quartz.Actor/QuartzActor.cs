@@ -17,6 +17,8 @@ namespace Akka.Quartz.Actor
     {
         private readonly IScheduler _scheduler;
 
+        private readonly bool _externallySupplied;
+
         public QuartzActor()
         {
             _scheduler = new StdSchedulerFactory().GetScheduler();
@@ -27,6 +29,12 @@ namespace Akka.Quartz.Actor
             _scheduler = new StdSchedulerFactory(props).GetScheduler();
         }
 
+        public QuartzActor(IScheduler scheduler)
+        {
+            _scheduler = scheduler;
+            _externallySupplied = true;
+        }
+
         protected override bool Receive(object message)
         {
             return message.Match().With<CreateJob>(CreateJobCommand).With<RemoveJob>(RemoveJobCommand).WasHandled;
@@ -34,13 +42,19 @@ namespace Akka.Quartz.Actor
 
         protected override void PreStart()
         {
-            _scheduler.Start();
+            if (!_externallySupplied)
+            {
+                _scheduler.Start();    
+            }
             base.PreStart();
         }
 
         protected override void PostStop()
         {
-            _scheduler.Shutdown();
+            if (!_externallySupplied)
+            {
+                _scheduler.Shutdown();
+            }
             base.PostStop();
         }
 
