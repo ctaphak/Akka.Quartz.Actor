@@ -61,7 +61,7 @@ namespace Akka.Quartz.Actor
                 try
                 {
                     var job =
-                    QuartzPersistentJob.CreateBuilderWithData(createJob.To, createJob.Message)
+                    QuartzPersistentJob.CreateBuilderWithData(createJob.To, createJob.Message, Context.System)
                         .WithIdentity(createJob.Trigger.JobKey)
                         .Build();
                     _scheduler.ScheduleJob(job, createJob.Trigger);
