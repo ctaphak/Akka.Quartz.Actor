@@ -18,6 +18,11 @@ namespace Akka.Quartz.Actor
         public QuartzPersistentActor()
         {
             _scheduler = new StdSchedulerFactory().GetScheduler();
+            this.AddSystemToScheduler();
+        }
+
+        private void AddSystemToScheduler()
+        {
             if (!_scheduler.Context.ContainsKey(QuartzPersistentJob.SysKey))
             {
                 _scheduler.Context.Add(QuartzPersistentJob.SysKey, Context.System);
@@ -29,6 +34,12 @@ namespace Akka.Quartz.Actor
             }
         }
 
+        public QuartzPersistentActor(IScheduler scheduler)
+            : base(scheduler)
+        {
+            AddSystemToScheduler();
+        }
+        
         protected override bool Receive(object message)
         {
             return message.Match().With<CreatePersistentJob>(CreateJobCommand).With<RemoveJob>(RemoveJobCommand).WasHandled;
