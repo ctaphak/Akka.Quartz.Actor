@@ -1,3 +1,6 @@
+#### 1.3.1 October 10 2017 ####
+Updated Akka to 1.3.1
+
 #### 1.2.3 July 13 2017 ####
 Updated Akka to 1.2.3
 
