@@ -5,7 +5,7 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Akka" Version="1.4.0-beta1" />
-    <PackageReference Include="Quartz" Version="2.5.0" />
+    <PackageReference Include="Akka" Version="$(AkkaVersion)" />
+    <PackageReference Include="Quartz" Version="$(QuartzVersion)" />
   </ItemGroup>
 </Project>

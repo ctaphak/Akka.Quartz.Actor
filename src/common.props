@@ -15,7 +15,8 @@
     <NoWarn></NoWarn>
   </PropertyGroup>
   <PropertyGroup>
-    <AkkaVersion>1.4.0</AkkaVersion>
+    <AkkaVersion>1.4.0-beta1</AkkaVersion>
+    <QuartzVersion>3.0.7</QuartzVersion>
     <XunitVersion>2.4.1</XunitVersion>
     <TestSdkVersion>15.9.0</TestSdkVersion>
   </PropertyGroup>
