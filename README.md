@@ -10,7 +10,7 @@ Create a Receiver:
 ```csharp
 class Receiver: ActorBase
 {
- 	public MyActor()
+    public Receiver()
     {
     }
 
