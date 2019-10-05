@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Specialized;
 using Akka.Actor;
 using Akka.Quartz.Actor.Commands;
 using Akka.Quartz.Actor.Events;
@@ -13,33 +14,28 @@ namespace Akka.Quartz.Actor
     /// </summary>
     public class QuartzPersistentActor : QuartzActor
     {
-        private readonly IScheduler _scheduler;
-
-        public QuartzPersistentActor()
+        public QuartzPersistentActor(string schedulerName)
+            : base(new NameValueCollection() { [StdSchedulerFactory.PropertySchedulerInstanceName] = schedulerName })
         {
-            _scheduler = new StdSchedulerFactory().GetScheduler();
-            this.AddSystemToScheduler();
-        }
-
-        private void AddSystemToScheduler()
-        {
-            if (!_scheduler.Context.ContainsKey(QuartzPersistentJob.SysKey))
-            {
-                _scheduler.Context.Add(QuartzPersistentJob.SysKey, Context.System);
-            }
-            else
-            {
-                _scheduler.Context.Remove(QuartzPersistentJob.SysKey);
-                _scheduler.Context.Add(QuartzPersistentJob.SysKey, Context.System);
-            }
         }
 
         public QuartzPersistentActor(IScheduler scheduler)
             : base(scheduler)
+        { }
+
+        protected override void OnSchedulerCreated(IScheduler scheduler)
         {
-            AddSystemToScheduler();
+            if (!scheduler.Context.ContainsKey(QuartzPersistentJob.SysKey))
+            {
+                scheduler.Context.Add(QuartzPersistentJob.SysKey, Context.System);
+            }
+            else
+            {
+                scheduler.Context.Remove(QuartzPersistentJob.SysKey);
+                scheduler.Context.Add(QuartzPersistentJob.SysKey, Context.System);
+            }
         }
-        
+
         protected override bool Receive(object message)
         {
             return message.Match().With<CreatePersistentJob>(CreateJobCommand).With<RemoveJob>(RemoveJobCommand).WasHandled;
@@ -64,7 +60,7 @@ namespace Akka.Quartz.Actor
                     QuartzPersistentJob.CreateBuilderWithData(createJob.To, createJob.Message, Context.System)
                         .WithIdentity(createJob.Trigger.JobKey)
                         .Build();
-                    _scheduler.ScheduleJob(job, createJob.Trigger);
+                    Scheduler.ScheduleJob(job, createJob.Trigger);
 
                     Context.Sender.Tell(new JobCreated(createJob.Trigger.JobKey, createJob.Trigger.Key));
                 }
